@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
-const{ Schema, model } = mongoose;
+const { Schema, model } = mongoose;
 
 const OtpverifySchema = new Schema({
-       email: {
+
+    email: {
         type: String,
         required: true,
         lowercase: true,
@@ -20,6 +21,6 @@ const OtpverifySchema = new Schema({
         required: true
     }
 
-})
+});
 
-module.exports.OtpToken || model("OtpToken", OtpverifySchema)
+module.exports = mongoose.models.OtpToken || model("OtpToken", OtpverifySchema);
