@@ -9,8 +9,8 @@ const EmailNotification = async ({
         const transporter = nodemailder.createTransport({
             service: "gmail",
             auth: {
-                user: "",
-                pass: ""
+                user: "saravanansenthil605@gmail.com",
+                pass: "jbxs lebv hnav bibm"
             }
         });
 
@@ -25,10 +25,14 @@ const EmailNotification = async ({
 
         const response = await transporter.sendMail(mailOptions);
 
-        console.log(" Email sent successfully:", response.messageId)
+        console.log("Email sent successfully:");
+
+        return true; 
 
     } catch (err) {
-        console.log(" Error sending Email:", err);
+        console.log("Error sending Email:", err);
         return false;
     }
-}
+};
+
+module.exports = EmailNotification;

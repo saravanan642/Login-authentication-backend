@@ -152,7 +152,7 @@ const SentOtp = async (req, res) => {
                                         color:#ffffff;
                                         font-size:25px;
                                     ">
-                                        NVKS Technovation
+                                        NVKS private Linated 
                                     </h1>
 
 
@@ -307,7 +307,7 @@ const SentOtp = async (req, res) => {
                                         color:#9ca3af;
                                         font-size:11px;
                                     ">
-                                        © 2026 SAN Technovation Pvt. Ltd.
+                                        © 2026 NVKS  Pvt. Ltd.
                                     </p>
 
 
@@ -377,7 +377,6 @@ const SentOtp = async (req, res) => {
     }
 
 };
-
 
 module.exports = {
     SentOtp
