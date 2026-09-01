@@ -1,7 +1,8 @@
 const express = require("express");
 
-const { SentOtp } = require("../Controller/authController")
+const { SentOtp ,VerifyOTP } = require("../Controller/authController")
 const router = express.Router();
 
-router.post("/send-OTP", SentOtp)
+router.post("/send-OTP", SentOtp);
+router.post("/verify-otp", VerifyOTP)
 module.exports = router;

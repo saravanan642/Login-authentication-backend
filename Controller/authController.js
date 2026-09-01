@@ -1,5 +1,5 @@
 const UserModel = require("../Models/userData");
-const OtpToken = require("../Models/OtpVerification");;
+const OtpToken = require("../Models/OtpVerification");
 const EmailNotification = require("../utils/Emailnotificatoin");
 
 
@@ -93,7 +93,7 @@ const SentOtp = async (req, res) => {
             }
 
         );
-      
+
 
 
         // HTML Email
@@ -378,6 +378,44 @@ const SentOtp = async (req, res) => {
 
 };
 
+const VerifyOTP = async (req, res) => {
+    try {
+        const { name, email, enteredOTP, password, contact, age, gender, address, city, state } = req.body;
+
+        if (!name || !email || !password || !enteredOTP || !contact || !age || !gender || !address || !city || !state) {
+            return res.json({ success: false, message: "All fields are required" });
+        }
+
+        const otpData = await OtpToken.findOne({ email });
+        if (!otpData) {
+            return res.json({ success: false, message: "Email not found" })
+        }
+            console.log(otpData)
+        if (Number(OtpToken.otp) !== Number(enteredOTP)) {
+            return res.json({ success: false, messgae: "Invaild OTP " })
+            
+        }
+
+        const existingUser = await UserModel.findOne({ email });
+
+        if (existingUser) {
+            return res.json({ success: false, message: " Email already registered " })
+        }
+
+        const saveUser = await UsetModel.create({ name, email, password, contact, age, gender, address, city, state })
+        return res.json({ success: true, message: "OTP verfication success" })
+
+    } catch (err) {
+        console.log(err.message)
+        console.log("Network Error in the server");
+    }
+}
+
+
+
+
+
 module.exports = {
-    SentOtp
+    SentOtp,
+    VerifyOTP
 };
