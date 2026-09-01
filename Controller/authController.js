@@ -390,10 +390,10 @@ const VerifyOTP = async (req, res) => {
         if (!otpData) {
             return res.json({ success: false, message: "Email not found" })
         }
-            console.log(otpData)
-        if (Number(OtpToken.otp) !== Number(enteredOTP)) {
+        console.log(otpData)
+        if (Number(otpData.otp) !== Number(enteredOTP)) {
             return res.json({ success: false, messgae: "Invaild OTP " })
-            
+
         }
 
         const existingUser = await UserModel.findOne({ email });
@@ -402,8 +402,21 @@ const VerifyOTP = async (req, res) => {
             return res.json({ success: false, message: " Email already registered " })
         }
 
-        const saveUser = await UsetModel.create({ name, email, password, contact, age, gender, address, city, state })
-        return res.json({ success: true, message: "OTP verfication success" })
+        const saveUser = await UserModel.create({
+            name,
+            email: email.toLowerCase().trim(),
+            password,
+            contact,
+            age,
+            gender,
+            address,
+            city,
+            state
+        });
+        if (saveUser) {
+            return res.json({ success: true, message: "OTP verfication success" })
+        }
+
 
     } catch (err) {
         console.log(err.message)
