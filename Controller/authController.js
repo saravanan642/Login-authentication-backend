@@ -438,12 +438,15 @@ const login = async (req, res) => {
                 message: "Please enter email and password"
             });
         }
+        // console.log(email);
+        // console.log(password);
 
         // Find user
         const user = await UserModel.findOne({
             email: email,
             password: password
         });
+        // console.log(user);
 
         // User not found
         if (!user) {
