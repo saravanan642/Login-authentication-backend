@@ -404,7 +404,7 @@ const VerifyOTP = async (req, res) => {
 
         const saveUser = await UserModel.create({
             name,
-            email: email.toLowerCase().trim(),
+            email: email,
             password,
             contact,
             age,
@@ -414,7 +414,7 @@ const VerifyOTP = async (req, res) => {
             state
         });
         if (saveUser) {
-            return res.json({ success: true, message: "OTP verfication success" })
+            return res.json({ success: true, message: "OTP verfication success", saveUser })
         }
 
 
@@ -424,11 +424,79 @@ const VerifyOTP = async (req, res) => {
     }
 }
 
+const login = async (req, res) => {
+    try {
 
+        const value = req.body;
 
+        const { email, password } = value;
 
+        // Check email and password
+        if (!email || !password) {
+            return res.json({
+                success: false,
+                message: "Please enter email and password"
+            });
+        }
+
+        // Find user
+        const user = await UserModel.findOne({
+            email: email,
+            password: password
+        });
+
+        // User not found
+        if (!user) {
+            return res.json({
+                success: false,
+                message: "Invalid email and password"
+            });
+        }
+
+        // Session data
+        const saveSession = {
+            id: String(user._id),
+            fullName: user.name,
+            email: user.email,
+            contact: user.contact,
+            role: user.role
+        };
+
+        // Save session
+        req.session.user = saveSession;
+
+        req.session.save((err) => {
+
+            if (err) {
+                console.log("Session save error:", err);
+
+                return res.json({
+                    success: false,
+                    message: "Session Error, contact your support team"
+                });
+            }
+
+            return res.json({
+                success: true,
+                message: "Login successful",
+                data: saveSession
+            });
+
+        });
+
+    } catch (err) {
+
+        console.log("Login Error:", err.message);
+
+        return res.json({
+            success: false,
+            message: "Network error in the server"
+        });
+    }
+};
 
 module.exports = {
     SentOtp,
-    VerifyOTP
+    VerifyOTP,
+    login
 };
