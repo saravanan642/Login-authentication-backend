@@ -498,8 +498,75 @@ const login = async (req, res) => {
     }
 };
 
+const forgotpassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword, confirmPassword } = req.body;
+
+        if (!email || !otp || !newPassword || !confirmPassword) {
+            return res.json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        const UserEmail = email.toLowerCase().trim();
+
+        const otpData = await OtpToken.findOne({ email: UserEmail });
+
+        console.log(otpData);
+
+        if (!otpData) {
+            return res.json({ success: false, message: "OTP not found" });
+        }
+
+        if (Number(otpData.otp) !== Number(otp)) {
+            return res.json({ success: false, message: "OTP not match" });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.json({ success: false, message: "Password is not match" });
+        }
+
+        const user = await UserModel.findOne({
+            email: {
+                $regex: `^${UserEmail}$`,
+                $options: "i"
+            }
+        });
+
+        console.log(UserEmail);
+        console.log(user);
+
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
+
+        user.password = newPassword;
+
+        await user.save();
+
+        await OtpToken.deleteOne({
+            email: UserEmail
+        });
+
+        return res.json({
+            success: true,
+            message: "Password change is successfully"
+        });
+
+    } catch (err) {
+        console.log(err.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Network error in the server"
+        });
+    }
+};
+
 module.exports = {
     SentOtp,
     VerifyOTP,
-    login
+    login,
+    forgotpassword
 };
