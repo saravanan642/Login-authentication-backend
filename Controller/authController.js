@@ -564,9 +564,76 @@ const forgotpassword = async (req, res) => {
     }
 };
 
+const resetpassword = async (req, res) => {
+    const { email, otp, currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!email || !otp || !currentPassword || !newPassword || !confirmPassword) {
+        return res.json({ success: false, message: "All fields are required" });
+    }
+
+    const userEmail = email.trim().toLowerCase();
+
+    const otpData = await OtpToken.findOne({
+        email: userEmail
+    });
+
+    console.log(otpData);
+
+    if (!otpData) {
+        return res.json({ success: false, message: "OTP not found" });
+    }
+
+    if (new Date() > otpData.expiresAt) {
+        await OtpToken.deleteOne({
+            email: userEmail
+        });
+
+        return res.json({ success: false, message: "OTP expired" });
+    }
+
+    if (Number(otpData.otp) !== Number(otp)) {
+        return res.json({ success: false, message: "OTP not match" });
+    }
+
+    if (newPassword !== confirmPassword) {
+        return res.json({ success: false, message: "Password is not match" });
+    }
+
+    const user = await UserModel.findOne({
+        email: {
+            $regex: `^${userEmail}$`,
+            $options: "i"
+        }
+    });
+
+    console.log(user);
+
+    if (!user) {
+        return res.json({ success: false, message: "User not found" });
+    }
+
+    if (user.password !== currentPassword) {
+        return res.json({ success: false, message: "Old password is incorrect" });
+    }
+
+    user.password = newPassword;
+
+    await user.save();
+
+    await OtpToken.deleteOne({
+        email: userEmail
+    });
+
+    return res.json({
+        success: true,
+        message: "Password changed successfully"
+    });
+}
+
 module.exports = {
     SentOtp,
     VerifyOTP,
     login,
-    forgotpassword
+    forgotpassword,
+    resetpassword
 };
