@@ -2,8 +2,6 @@ const UserModel = require("../Models/userData");
 const OtpToken = require("../Models/OtpVerification");
 const EmailNotification = require("../utils/Emailnotificatoin");
 
-
-
 const SentOtp = async (req, res) => {
 
     try {
@@ -630,10 +628,44 @@ const resetpassword = async (req, res) => {
     });
 }
 
+
+const checkAuth = async (req, res) => {
+    try {
+
+        console.log("Check Auth Session:", req.session.user);
+
+        // Session not found
+        if (!req.session.user) {
+            return res.json({
+                success: false,
+                message: "User is not logged in"
+            });
+        }
+
+        // Session exists
+        return res.json({
+            success: true,
+            message: "User is authenticated",
+            data: req.session.user
+        });
+
+    } catch (err) {
+
+        console.log("CheckAuth error:", err.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        });
+    }
+};
+
 module.exports = {
     SentOtp,
     VerifyOTP,
     login,
     forgotpassword,
-    resetpassword
+    resetpassword,
+    checkAuth
+
 };
