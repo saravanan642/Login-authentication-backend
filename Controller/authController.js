@@ -660,12 +660,36 @@ const checkAuth = async (req, res) => {
     }
 };
 
+
+const logout = async (req, res) => {
+    try {
+        if (req.session.user) {
+            req.session.destroy((err) => {
+                if (err) {
+                    console.log("Error in destroying session:", err);
+                    return res.send({ success: false, message: "Failed to log out! Please contact developer." });
+                }
+                return res.send({ success: true, message: "Logged out successfully!" });
+            });
+        }
+        else {
+            return res.send({ success: false, message: "Please login and try again later!" })
+        }
+    }
+    catch (err) {
+        console.log("Trouble in logging out:", err)
+        return res.send({ success: false, message: "Trouble in logging out! Please contact support Team." })
+    }
+}
+
+
 module.exports = {
     SentOtp,
     VerifyOTP,
     login,
     forgotpassword,
     resetpassword,
-    checkAuth
+    checkAuth,
+    logout
 
 };
